@@ -93,15 +93,14 @@ class App extends Component {
   }
 
   calculateFaceLocation = (bounding_box) => {
-    const clarifaiFace = bounding_box;
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
     return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height),
+      leftCol: bounding_box.left_col * width,
+      topRow: bounding_box.top_row * height,
+      rightCol: width - (bounding_box.right_col * width),
+      bottomRow: height - (bounding_box.bottom_row * height),
     }
   }
   loadUser = (user) => {
@@ -115,24 +114,19 @@ class App extends Component {
   }
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input })
-    fetch('http://localhost:3000/image', {
+    fetch('https://sleepy-bayou-13918.herokuapp.com/image', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 'input': this.state.input })
-    }).then(response => {
-      if (response.status === 200)
-        response.json()
-      else {
-        throw response.json()
-      }
-    }).then(data => {
+    }).then(response => response.json()).then(data => {
+      console.log(data);
       this.displayFacebox(this.calculateFaceLocation(data));
       this.updateUserEntries();
     }).catch(error => console.log(error));
   }
   updateUserEntries = () => {
 
-    fetch('http://localhost:3000/image', {
+    fetch('https://sleepy-bayou-13918.herokuapp.com/image', {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: this.state.user.id })
